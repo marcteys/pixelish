@@ -1,52 +1,94 @@
 // http://lorempixel.com/400/200/
-PImage img;
+PImage bgImage;
 
 ArrayList<PVector> pj = new ArrayList<PVector>();
 
 int gridSize = 15;
+int picturesToLoad = 4;
+ArrayList<PImage> webImages = new ArrayList<PImage>();
+boolean displayDetails = true;
 
 
 void setup() {
-  size(851, 315);
+  surface.setResizable(true);
 
+  /*
   pj.add(new PVector(100, 150));
-  pj.add(new PVector(170, 210));
-  pj.add(new PVector(260, 220));
-  pj.add(new PVector(230, 100));
-  pj.add(new PVector(140, 150));
-  pj.add(new PVector(120, 90));
-  img = loadImage("test.png");
+   pj.add(new PVector(170, 210));
+   pj.add(new PVector(260, 220));
+   pj.add(new PVector(230, 100));
+   pj.add(new PVector(140, 150));
+   pj.add(new PVector(120, 90));*/
+  bgImage = loadImage("test.png");
+  surface.setSize(bgImage.width, bgImage.height);
+
+  for (int i = 0; i < picturesToLoad; i++) {
+    String url = "http://lorempixel.com/" + width + "/"+height+"/";
+    // Load image from a web server
+    webImages.add(loadImage(url, "jpg"));
+  }
 }
+
+
 void draw() {
   //  translate(width*0.25,height*0.25);
   background(255);
-  image(img, 0, 0);
+  image(bgImage, 0, 0);
   noStroke();
   fill(255, 255, 255, 100);
-/*
+
   for (int i =0; i <= width/gridSize; i++) {
     for (int j =0; j <= height/gridSize; j++) {
       if ((i%2 == 0 && j%2 == 0 ) || (i%2 == 1 && j%2 == 1) ) {
         PVector rpos = new PVector(i*gridSize + gridSize /2, j*gridSize + gridSize /2); // get the middle of the circles
-        if (inPolyCheck(rpos, pj)==1)  rect(i*gridSize, j*gridSize, gridSize, gridSize);
+        if (inPolyCheck(rpos, pj)==1) {
+          rect(i*gridSize, j*gridSize, gridSize, gridSize);
+          int randImage = round(random(0, webImages.size()-1));
+          randImage = round(( i * j ) % webImages.size());
+
+          PImage newSquareImage = webImages.get(randImage).get(i*gridSize, j*gridSize, gridSize, gridSize); 
+          image(newSquareImage, i*gridSize, j*gridSize);
+        }
       }
     }
   }
-*/
 
-  fill(255);
-  stroke(0);
-  PVector m = new PVector(mouseX, mouseY);
-  for (int i = 0; i < pj.size(); i++) {
-    ellipse(pj.get(i).x, pj.get(i).y, 10, 10);
-    if (i<pj.size()-1)line(pj.get(i).x, pj.get(i).y, pj.get(i+1).x, pj.get(i+1).y);
+  // visual stuff 
+  if (displayDetails) {
+
+    fill(255);
+    stroke(0);
+    PVector m = new PVector(mouseX, mouseY);
+    for (int i = 0; i < pj.size(); i++) {
+      ellipse(pj.get(i).x, pj.get(i).y, 10, 10);
+      if (i<pj.size()-1)line(pj.get(i).x, pj.get(i).y, pj.get(i+1).x, pj.get(i+1).y);
+    }
+    if (inPolyCheck(m, pj) ==1) ellipse(m.x, m.y, 15, 15);
   }
-  if (inPolyCheck(m, pj) ==1) ellipse(m.x, m.y, 15, 15);
 }
 
+void mouseClicked() {
+  PVector m = new PVector(mouseX, mouseY);
+  pj.add(m);
+}
 
+void keyPressed() {
+  if (key == CODED) {
+    if (keyCode == UP) {
+      for (int i = 0; i < picturesToLoad; i++) {
+        String url = "http://lorempixel.com/" + width + "/"+height+"/";
+        // Load image from a web server
+        webImages.add(loadImage(url, "jpg"));
+      }
+    }
+    if (keyCode == DOWN) displayDetails = !displayDetails;
+  }
+}
 
 int inPolyCheck(PVector v, ArrayList<PVector> p) {
+
+  if (p.size() < 3 ) return 0;
+
   float a = 0;
   for (int i =0; i<p.size()-1; ++i) {
     PVector v1 = p.get(i).get();
