@@ -1,15 +1,21 @@
 // http://lorempixel.com/400/200/
-PImage bgImage;
 
+//CreattionPoly
 ArrayList<PVector> pj = new ArrayList<PVector>();
+ArrayList<Polygon> shapes = new ArrayList<Polygon>();
 
+
+float minDistCollapse = 10;
+boolean displayDetails = true;
+
+//image stuf
 int gridSize = 15;
 int picturesToLoad = 4;
 ArrayList<PImage> webImages = new ArrayList<PImage>();
-boolean displayDetails = true;
-
+PImage bgImage;
 
 void setup() {
+  size(800, 800);
   surface.setResizable(true);
 
   /*
@@ -20,10 +26,12 @@ void setup() {
    pj.add(new PVector(140, 150));
    pj.add(new PVector(120, 90));*/
   bgImage = loadImage("test.png");
+  bgImage = loadImage("1.jpg");
   surface.setSize(bgImage.width, bgImage.height);
 
   for (int i = 0; i < picturesToLoad; i++) {
     String url = "http://lorempixel.com/" + width + "/"+height+"/";
+    url = "http://lorempixel.com/1024/768/";
     // Load image from a web server
     webImages.add(loadImage(url, "jpg"));
   }
@@ -31,31 +39,16 @@ void setup() {
 
 
 void draw() {
-  //  translate(width*0.25,height*0.25);
-  background(255);
+
   image(bgImage, 0, 0);
   noStroke();
-  fill(255, 255, 255, 100);
-
-  for (int i =0; i <= width/gridSize; i++) {
-    for (int j =0; j <= height/gridSize; j++) {
-      if ((i%2 == 0 && j%2 == 0 ) || (i%2 == 1 && j%2 == 1) ) {
-        PVector rpos = new PVector(i*gridSize + gridSize /2, j*gridSize + gridSize /2); // get the middle of the circles
-        if (inPolyCheck(rpos, pj)==1) {
-          rect(i*gridSize, j*gridSize, gridSize, gridSize);
-          int randImage = round(random(0, webImages.size()-1));
-          randImage = round(( i * j ) % webImages.size());
-
-          PImage newSquareImage = webImages.get(randImage).get(i*gridSize, j*gridSize, gridSize, gridSize); 
-          image(newSquareImage, i*gridSize, j*gridSize);
-        }
-      }
-    }
+  displayCudes(pj);
+  for (int i = 0; i < shapes.size(); i++) {
+    displayCudes(shapes.get(i).points);
   }
 
   // visual stuff 
   if (displayDetails) {
-
     fill(255);
     stroke(0);
     PVector m = new PVector(mouseX, mouseY);
@@ -63,13 +56,48 @@ void draw() {
       ellipse(pj.get(i).x, pj.get(i).y, 10, 10);
       if (i<pj.size()-1)line(pj.get(i).x, pj.get(i).y, pj.get(i+1).x, pj.get(i+1).y);
     }
+
+    for (int i = 0; i < shapes.size(); i++) {
+      shapes.get(i).update();
+    }
+
     if (inPolyCheck(m, pj) ==1) ellipse(m.x, m.y, 15, 15);
   }
 }
 
+void displayCudes(ArrayList<PVector> points) {
+
+  for (int i =0; i <= width/gridSize; i++) {
+    for (int j =0; j <= height/gridSize; j++) {
+      if ((i%2 == 0 && j%2 == 0 ) || (i%2 == 1 && j%2 == 1) ) {
+        PVector rpos = new PVector(i*gridSize + gridSize /2, j*gridSize + gridSize /2); // get the middle of the circles
+        if (inPolyCheck(rpos, points)==1) {
+          if (displayDetails) {
+            rect(i*gridSize, j*gridSize, gridSize, gridSize);
+          } else {
+            int randImage = round(random(0, webImages.size()-1));
+            randImage = round(( i * j ) % webImages.size());
+            PImage newSquareImage = webImages.get(randImage).get(i*gridSize, j*gridSize, gridSize, gridSize); 
+            image(newSquareImage, i*gridSize, j*gridSize);
+          }
+        }
+      }
+    }
+  }
+}
+
+
 void mouseClicked() {
   PVector m = new PVector(mouseX, mouseY);
-  pj.add(m);
+
+
+  if (pj.size() != 0 && proximityPoint(m, pj.get(0))) // if it's near the first one
+  {
+    closeShape();
+  } else
+  {
+    pj.add(m);
+  }
 }
 
 void keyPressed() {
@@ -82,11 +110,23 @@ void keyPressed() {
       }
     }
     if (keyCode == DOWN) displayDetails = !displayDetails;
+    if (keyCode == LEFT) {
+      gridSize--;
+      if (gridSize <= 0 ) gridSize = 1;
+    }
+    if (keyCode == RIGHT) gridSize++;
+    if (keyCode == CONTROL) closeShape();
   }
 }
 
-int inPolyCheck(PVector v, ArrayList<PVector> p) {
+void closeShape() {
+  println("CLose shape");
+  pj.add(pj.get(0).get());
+  shapes.add(new Polygon(pj));
+  pj.clear();
+}
 
+int inPolyCheck(PVector v, ArrayList<PVector> p) {
   if (p.size() < 3 ) return 0;
 
   float a = 0;
@@ -104,8 +144,6 @@ int inPolyCheck(PVector v, ArrayList<PVector> p) {
   else return 0;
 }
 
-
-
 float vAtan2cent180(PVector cent, PVector v2, PVector v1) {
   PVector vA = v1.get();
   PVector vB = v2.get();
@@ -116,4 +154,14 @@ float vAtan2cent180(PVector cent, PVector v2, PVector v1) {
   if (ang < 0) ang = TWO_PI + ang;
   ang-=PI;
   return ang;
+}
+
+boolean proximityPoint(PVector p1, PVector p2)
+{
+  boolean minpoint = false;
+  if (p1.dist(p2) < minDistCollapse && p1.dist(p2) != 0)
+  {
+    minpoint = true;
+  }
+  return minpoint;
 }
