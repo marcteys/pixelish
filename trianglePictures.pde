@@ -44,6 +44,7 @@ void draw() {
 
   // visual stuff 
   if (displayDetails) {
+    displayInstructions();
     fill(255);
     stroke(0);
     PVector m = new PVector(mouseX, mouseY);
@@ -121,7 +122,14 @@ void keyPressed() {
 
 }
 
+void displayInstructions() {
+  String s = "INSTRUCTIONS\n\u00A0\nMouse\nLeft click : Create a point on the shape\nRight click : Delete a shape\n\u00A0\nArrow keys\nLEFT/RIGHT : Increase/Decrease cubes size\nENTER : Close a shape\nUP : Reload randomly the images\nDOWN : Toggle helpers";
+  fill(255);
+  text(s, 10, 10, 500, 500); 
+}
+
 void closeShape() {
+  if(pj.size() == 0) return;
   println("CLose shape");
   pj.add(pj.get(0).get());
   shapes.add(new Polygon(pj));
@@ -130,7 +138,6 @@ void closeShape() {
 
 int inPolyCheck(PVector v, ArrayList<PVector> p) {
   if (p.size() < 3 ) return 0;
-
   float a = 0;
   for (int i =0; i<p.size()-1; ++i) {
     PVector v1 = p.get(i).get();
@@ -140,8 +147,6 @@ int inPolyCheck(PVector v, ArrayList<PVector> p) {
   PVector v1 = p.get(p.size()-1).get();
   PVector v2 = p.get(0).get();
   a += vAtan2cent180(v, v1, v2);
-  //  if (a < 0.001) println(degrees(a));
-
   if (abs(abs(a) - TWO_PI) < 0.01) return 1;
   else return 0;
 }
