@@ -17,15 +17,7 @@ PImage bgImage;
 void setup() {
   size(800, 800);
   surface.setResizable(true);
-
-  /*
-  pj.add(new PVector(100, 150));
-   pj.add(new PVector(170, 210));
-   pj.add(new PVector(260, 220));
-   pj.add(new PVector(230, 100));
-   pj.add(new PVector(140, 150));
-   pj.add(new PVector(120, 90));*/
-  bgImage = loadImage("test.png");
+  //bgImage = loadImage("test.png");
   bgImage = loadImage("1.jpg");
   surface.setSize(bgImage.width, bgImage.height);
 
@@ -35,6 +27,7 @@ void setup() {
     // Load image from a web server
     webImages.add(loadImage(url, "jpg"));
   }
+  
 }
 
 
@@ -66,7 +59,6 @@ void draw() {
 }
 
 void displayCudes(ArrayList<PVector> points) {
-
   for (int i =0; i <= width/gridSize; i++) {
     for (int j =0; j <= height/gridSize; j++) {
       if ((i%2 == 0 && j%2 == 0 ) || (i%2 == 1 && j%2 == 1) ) {
@@ -75,8 +67,8 @@ void displayCudes(ArrayList<PVector> points) {
           if (displayDetails) {
             rect(i*gridSize, j*gridSize, gridSize, gridSize);
           } else {
-            int randImage = round(random(0, webImages.size()-1));
-            randImage = round(( i * j ) % webImages.size());
+            randomSeed(i * j);
+            int randImage = round(floor(random(0,i * j)) % webImages.size());
             PImage newSquareImage = webImages.get(randImage).get(i*gridSize, j*gridSize, gridSize, gridSize); 
             image(newSquareImage, i*gridSize, j*gridSize);
           }
@@ -86,10 +78,8 @@ void displayCudes(ArrayList<PVector> points) {
   }
 }
 
-
 void mouseClicked() {
   PVector m = new PVector(mouseX, mouseY);
-
 
   if (pj.size() != 0 && proximityPoint(m, pj.get(0))) // if it's near the first one
   {
