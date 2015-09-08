@@ -33,6 +33,8 @@ void setup() {
 
 void draw() {
 
+  listenMouseEvent();
+  
   image(bgImage, 0, 0);
   noStroke();
   displayCudes(pj);
@@ -53,8 +55,6 @@ void draw() {
     for (int i = 0; i < shapes.size(); i++) {
       shapes.get(i).update();
     }
-
-    if (inPolyCheck(m, pj) ==1) ellipse(m.x, m.y, 15, 15);
   }
 }
 
@@ -78,16 +78,27 @@ void displayCudes(ArrayList<PVector> points) {
   }
 }
 
-void mouseClicked() {
-  PVector m = new PVector(mouseX, mouseY);
-
-  if (pj.size() != 0 && proximityPoint(m, pj.get(0))) // if it's near the first one
-  {
-    closeShape();
-  } else
-  {
-    pj.add(m);
-  }
+void listenMouseEvent() {
+    if (mousePressed)
+    {  
+      if (mouseButton == LEFT)
+     {   
+      PVector m = new PVector(mouseX, mouseY);
+      if (pj.size() != 0 && proximityPoint(m, pj.get(0))) // if it's near the first one
+      {
+        closeShape();
+      } else
+      {
+        pj.add(m);
+      }
+     }
+     else if (mouseButton == RIGHT) {
+        PVector m = new PVector(mouseX, mouseY);
+        for (int i = 0; i < shapes.size(); i++) {
+          if(inPolyCheck(m, shapes.get(i).points)==1) shapes.remove(i);
+        }
+     }
+    }
 }
 
 void keyPressed() {
@@ -105,8 +116,9 @@ void keyPressed() {
       if (gridSize <= 0 ) gridSize = 1;
     }
     if (keyCode == RIGHT) gridSize++;
-    if (keyCode == CONTROL) closeShape();
   }
+  if (key == ENTER ) closeShape();
+
 }
 
 void closeShape() {
