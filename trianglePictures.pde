@@ -18,7 +18,7 @@ void setup() {
   size(800, 800);
   surface.setResizable(true);
   //bgImage = loadImage("test.png");
-  bgImage = loadImage("1.jpg");
+  bgImage = loadImage("2.jpg");
   surface.setSize(bgImage.width, bgImage.height);
 
   for (int i = 0; i < picturesToLoad; i++) {
@@ -27,14 +27,11 @@ void setup() {
     // Load image from a web server
     webImages.add(loadImage(url, "jpg"));
   }
-  
 }
-
 
 void draw() {
 
   listenMouseEvent();
-  
   image(bgImage, 0, 0);
   noStroke();
   displayCudes(pj);
@@ -52,7 +49,6 @@ void draw() {
       ellipse(pj.get(i).x, pj.get(i).y, 10, 10);
       if (i<pj.size()-1)line(pj.get(i).x, pj.get(i).y, pj.get(i+1).x, pj.get(i+1).y);
     }
-
     for (int i = 0; i < shapes.size(); i++) {
       shapes.get(i).update();
     }
@@ -69,7 +65,7 @@ void displayCudes(ArrayList<PVector> points) {
             rect(i*gridSize, j*gridSize, gridSize, gridSize);
           } else {
             randomSeed(i * j);
-            int randImage = round(floor(random(0,i * j)) % webImages.size());
+            int randImage = round(floor(random(0, i * j)) % webImages.size());
             PImage newSquareImage = webImages.get(randImage).get(i*gridSize, j*gridSize, gridSize, gridSize); 
             image(newSquareImage, i*gridSize, j*gridSize);
           }
@@ -80,10 +76,10 @@ void displayCudes(ArrayList<PVector> points) {
 }
 
 void listenMouseEvent() {
-    if (mousePressed)
-    {  
-      if (mouseButton == LEFT)
-     {   
+  if (mousePressed)
+  {  
+    if (mouseButton == LEFT)
+    {   
       PVector m = new PVector(mouseX, mouseY);
       if (pj.size() != 0 && proximityPoint(m, pj.get(0))) // if it's near the first one
       {
@@ -92,14 +88,13 @@ void listenMouseEvent() {
       {
         pj.add(m);
       }
-     }
-     else if (mouseButton == RIGHT) {
-        PVector m = new PVector(mouseX, mouseY);
-        for (int i = 0; i < shapes.size(); i++) {
-          if(inPolyCheck(m, shapes.get(i).points)==1) shapes.remove(i);
-        }
-     }
+    } else if (mouseButton == RIGHT) {
+      PVector m = new PVector(mouseX, mouseY);
+      for (int i = 0; i < shapes.size(); i++) {
+        if (inPolyCheck(m, shapes.get(i).points)==1) shapes.remove(i);
+      }
     }
+  }
 }
 
 void keyPressed() {
@@ -119,17 +114,16 @@ void keyPressed() {
     if (keyCode == RIGHT) gridSize++;
   }
   if (key == ENTER ) closeShape();
-
 }
 
 void displayInstructions() {
   String s = "INSTRUCTIONS\n\u00A0\nMouse\nLeft click : Create a point on the shape\nRight click : Delete a shape\n\u00A0\nArrow keys\nLEFT/RIGHT : Increase/Decrease cubes size\nENTER : Close a shape\nUP : Reload randomly the images\nDOWN : Toggle helpers";
   fill(255);
-  text(s, 10, 10, 500, 500); 
+  text(s, 10, 10, 500, 500);
 }
 
 void closeShape() {
-  if(pj.size() == 0) return;
+  if (pj.size() == 0) return;
   println("CLose shape");
   pj.add(pj.get(0).get());
   shapes.add(new Polygon(pj));
