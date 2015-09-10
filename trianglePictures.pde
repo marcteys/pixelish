@@ -18,7 +18,7 @@ void setup() {
   size(800, 800);
   surface.setResizable(true);
   //bgImage = loadImage("test.png");
-  bgImage = loadImage("2.jpg");
+  bgImage = loadImage("3.jpg");
   surface.setSize(bgImage.width, bgImage.height);
 
   for (int i = 0; i < picturesToLoad; i++) {
