@@ -3,7 +3,7 @@ A processing sketch about randomling pixelling pictures
 
 ##How it works
 
-Create some shape, 
+Once you have createed some shapes, the program fill the gap with some tiles randomly selected on [Lorem Pixel](http://lorempixel.com)
 
 ##Controls
 
